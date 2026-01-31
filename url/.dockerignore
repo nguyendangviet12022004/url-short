@@ -1,0 +1,5 @@
+/config
+/private
+.git
+.env
+.gitignore

@@ -1,0 +1,13 @@
+# user service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-user-service
+spec:
+  selector:
+    {{- include "url-short-cluster.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: user-pod
+  ports:
+    - protocol: TCP
+      port: {{ .Values.port.userPod }}
+      targetPort: {{ .Values.port.userPod }}

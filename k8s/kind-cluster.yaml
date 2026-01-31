@@ -4,6 +4,7 @@ name: url-short-cluster
 nodes:
   - role: control-plane
   - role: worker
+  - role: worker
     extraMounts:
       - hostPath: ./data/mnt
         containerPath: /data/mnt

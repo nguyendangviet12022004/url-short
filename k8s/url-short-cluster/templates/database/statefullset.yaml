@@ -1,0 +1,90 @@
+#user db statefulset
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-user-db
+  labels:
+    {{- include "url-short-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: user-db-statefulset
+spec:
+  serviceName: {{ include "url-short-cluster.fullname" . }}-user-db-service
+  selector:
+    matchLabels:
+      {{- include "url-short-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: user-db-pod
+  template:
+    metadata:
+      labels:
+        {{- include "url-short-cluster.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: user-db-pod
+    spec:
+      containers:
+        - name: user-db-pod
+          image: "{{ .Values.image.user.db.repository }}:{{ .Values.image.user.db.tag }}"
+        {{- with .Values.postgres.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .Values.port.userDb | default 5432 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "url-short-cluster.fullname" . }}-user-db-cm
+          volumeMounts:
+            - name: user-db-pvc
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: user-db-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "local-storage"
+        resources:
+          requests:
+            storage: 1Gi
+
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-url-db
+  labels:
+    {{- include "url-short-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: url-db-statefulset
+spec:
+  serviceName: {{ include "url-short-cluster.fullname" . }}-url-db-service
+  selector:
+    matchLabels:
+      {{- include "url-short-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: url-db-pod
+  template:
+    metadata:
+      labels:
+        {{- include "url-short-cluster.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: url-db-pod
+    spec:
+      containers:
+        - name: url-db-pod
+          image: "{{ .Values.image.url.db.repository }}:{{ .Values.image.url.db.tag }}"
+        {{- with .Values.postgres.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+          ports:
+            - containerPort: {{ .Values.port.urlDb | default 5432 }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "url-short-cluster.fullname" . }}-url-db-cm
+          volumeMounts:
+            - name: url-db-pvc
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: url-db-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "local-storage"
+        resources:
+          requests:
+            storage: 1Gi

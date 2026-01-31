@@ -1,0 +1,85 @@
+#user deployment# user deploy
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-user-deploy
+  labels:
+    {{- include "url-short-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: user-deploy
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "url-short-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: user-pod
+  template:
+    metadata:
+      labels:
+        {{- include "url-short-cluster.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: user-pod
+    spec:
+      containers:
+      - name: {{ include "url-short-cluster.fullname" . }}-user-pod
+        image: "{{ .Values.image.user.pod.repository }}:{{ .Values.image.user.pod.tag }}"
+      {{- with .Values.goLang.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+      {{- end }}
+        volumeMounts:
+          - mountPath: "/etc/url-short/user/config"
+            name: user-cm
+            readOnly: true
+          - mountPath: "/etc/url-short/user/private"
+            name: private-key
+            readOnly: true
+        env:
+          - name: CONFIG_PATH
+            value: /etc/url-short/user/config
+
+      volumes:
+        - name: user-cm
+          configMap:
+            name: {{ include "url-short-cluster.fullname" . }}-user-cm
+        - name: private-key
+          secret:
+            secretName: {{ include "url-short-cluster.fullname" . }}-private-key
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-url-deploy
+  labels:
+    {{- include "url-short-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: url-deploy
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "url-short-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: url-pod
+  template:
+    metadata:
+      labels:
+        {{- include "url-short-cluster.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: url-pod
+    spec:
+      containers:
+      - name: {{ include "url-short-cluster.fullname" . }}-url-pod
+        image: "{{ .Values.image.url.pod.repository }}:{{ .Values.image.url.pod.tag }}"
+      {{- with .Values.goLang.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+      {{- end }}
+        volumeMounts:
+          - mountPath: "/etc/url-short/url/config"
+            name: url-cm
+            readOnly: true
+        env:
+          - name: CONFIG_PATH
+            value: /etc/url-short/url/config
+
+      volumes:
+        - name: url-cm
+          configMap:
+            name: {{ include "url-short-cluster.fullname" . }}-url-cm

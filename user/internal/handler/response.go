@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Success(c *gin.Context, data map[string]any) {
+func Success(c *gin.Context, data any) {
 	c.JSON(http.StatusOK, data)
 }
 

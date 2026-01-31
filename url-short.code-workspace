@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"sqltools.connections": [
+			{
+				"ssh": "Disabled",
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 5002,
+				"driver": "PostgreSQL",
+				"name": "url_db",
+				"database": "url_db",
+				"username": "postgres"
+			}
+		]
+	}
+}

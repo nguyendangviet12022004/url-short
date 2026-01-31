@@ -1,0 +1,89 @@
+replicaCount: 1
+image:
+  user:
+    db:
+      repository: "postgres"
+      tag: "17.7-alpine3.23"
+      pullPolicy: "IfNotPresent"
+    pod:
+      repository: "vietnguyendang/url-short-user"
+      tag: "0.0.6"
+      pullPolicy: "IfNotPresent"
+  url:
+    db:
+      repository: "postgres"
+      tag: "17.7-alpine3.23"
+      pullPolicy: "IfNotPresent"
+    pod:
+      repository: "vietnguyendang/url-short-url"
+      tag: "0.0.1"
+      pullPolicy: "IfNotPresent"
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+port:
+  userDb: 5432
+  userPod: 8080
+  urlDb: 5432
+  urlPod: 8080
+
+goLang:
+  resources:
+    requests:
+      memory: "200Mi"
+      cpu: "200m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+postgres:
+  resources:
+    requests:
+      memory: "200Mi"
+      cpu: "200m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+httpRoute:
+  enabled: false
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+# livenessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+# readinessProbe:
+#   httpGet:
+#     path: /
+#     port: http
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+
+volumeMounts: []
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
