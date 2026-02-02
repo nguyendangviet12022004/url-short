@@ -1,20 +1,23 @@
-FROM golang:1.25 AS builder
+FROM golang:1.25 AS build-stage
 
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd/app/main.go
 
-FROM alpine:latest
+RUN CGO_ENABLED=0 GOOS=linux go build -o /app/url-short-url cmd/app/main.go
 
-RUN apk add --no-cache tzdata
+# Deploy the application binary into a lean image
+FROM gcr.io/distroless/base-debian11 AS build-release-stage
 
-WORKDIR /app
+WORKDIR /
 
-COPY --from=builder /build/main .
+COPY --from=build-stage /app/url-short-url /app/url-short-url
 
+EXPOSE 8080
 
-CMD ["./main"]
+USER nonroot:nonroot
+
+ENTRYPOINT ["/app/url-short-url"]
