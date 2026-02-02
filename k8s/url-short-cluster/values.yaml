@@ -18,6 +18,15 @@ image:
       repository: "vietnguyendang/url-short-url"
       tag: "0.0.1"
       pullPolicy: "IfNotPresent"
+  notification:
+    db:
+      repository: "mongo"
+      tag: "8.0-noble"
+      pullPolicy: "IfNotPresent"
+    pod:
+      repository: "vietnguyendang/url-short-notification"
+      tag: "0.0.1"
+      pullPolicy: "IfNotPresent"
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
@@ -27,6 +36,8 @@ port:
   userPod: 8080
   urlDb: 5432
   urlPod: 8080
+  notificationDb: 27017
+  notificationPod: 8080
 
 goLang:
   resources:

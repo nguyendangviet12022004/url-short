@@ -44,6 +44,7 @@ spec:
             storage: 1Gi
 
 
+# url db statefulset
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -82,6 +83,54 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: url-db-pvc
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "local-storage"
+        resources:
+          requests:
+            storage: 1Gi
+
+
+# notification db statefulset
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "url-short-cluster.fullname" . }}-notification-db
+  labels:
+    {{- include "url-short-cluster.labels" . | nindent 4 }}
+    app.kubernetes.io/component: notification-db-statefulset
+spec:
+  serviceName: {{ include "url-short-cluster.fullname" . }}-notification-db-service
+  selector:
+    matchLabels:
+      {{- include "url-short-cluster.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: notification-db-pod
+  template:
+    metadata:
+      labels:
+        {{- include "url-short-cluster.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: notification-db-pod
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: notification-db-pod
+        image: "{{ .Values.image.notification.db.repository }}:{{ .Values.image.notification.db.tag }}"
+      {{- with .Values.postgres.resources }}
+        resources:
+          {{- toYaml . | nindent 12 }}
+      {{- end }}
+        ports:
+          - containerPort: {{ .Values.port.notificationDb | default 27017 }}
+        envFrom:
+          - configMapRef:
+              name: {{ include "url-short-cluster.fullname" . }}-notification-db-cm
+        volumeMounts:
+          - name: notification-db-pvc
+            mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: notification-db-pvc
       spec:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "local-storage"
