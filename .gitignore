@@ -5,3 +5,4 @@ private/
 configmap.yaml
 secret.yaml
 .agent
+data/
