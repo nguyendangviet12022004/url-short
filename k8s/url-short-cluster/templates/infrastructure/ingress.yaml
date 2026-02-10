@@ -42,3 +42,11 @@ spec:
         - name: {{ include "url-short-cluster.fullname" . }}-user-service
           kind: Service
           port: {{ .Values.port.userPod }}
+    - matches:
+        - path: 
+            type: PathPrefix
+            value: "/url"
+      backendRefs:
+        - name: {{ include "url-short-cluster.fullname" . }}-url-service
+          kind: Service
+          port: {{ .Values.port.urlPod }}

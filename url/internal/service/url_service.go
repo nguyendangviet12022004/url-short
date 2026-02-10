@@ -13,6 +13,7 @@ import (
 type UrlService interface {
 	Create(ctx context.Context, request *dto.CreateUrlRequest, userId uint) error
 	GetFullUrl(ctx context.Context, shortUrl string) (string, error)
+	GetUrlsByUserId(ctx context.Context, userId uint) ([]model.Url, error)
 }
 
 type urlService struct {
@@ -56,4 +57,8 @@ func (s *urlService) GetFullUrl(ctx context.Context, shortUrl string) (string, e
 		return "", exception.ErrShortUrlNotFound
 	}
 	return url.LongUrl, nil
+}
+
+func (s *urlService) GetUrlsByUserId(ctx context.Context, userId uint) ([]model.Url, error) {
+	return s.urlRepository.FindByUserId(ctx, userId)
 }

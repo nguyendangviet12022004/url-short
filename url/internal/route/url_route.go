@@ -9,5 +9,6 @@ import (
 func InitUrlRoute(router *gin.Engine, urlHandler handler.UrlHandler) {
 	urlGroup := router.Group("")
 	urlGroup.POST("", urlHandler.Create)
-	urlGroup.GET("/:short", urlHandler.GetFullUrl)
+	urlGroup.GET("/:shortUrl", urlHandler.GetFullUrl)
+	urlGroup.GET("/", urlHandler.GetUrlsByUserId)
 }

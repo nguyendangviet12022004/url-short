@@ -16,7 +16,7 @@ image:
       pullPolicy: "IfNotPresent"
     pod:
       repository: "vietnguyendang/url-short-url"
-      tag: "0.0.1"
+      tag: "0.0.4"
       pullPolicy: "IfNotPresent"
   notification:
     db:
